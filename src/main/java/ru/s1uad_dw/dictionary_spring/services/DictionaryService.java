@@ -5,10 +5,12 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import ru.s1uad_dw.dictionary_spring.dao.Word;
 import ru.s1uad_dw.dictionary_spring.dto.*;
+import ru.s1uad_dw.dictionary_spring.exceptions.WordIsNotValidException;
 import ru.s1uad_dw.dictionary_spring.exceptions.WordNotFountException;
 import ru.s1uad_dw.dictionary_spring.mappers.DictionaryMappers;
 import ru.s1uad_dw.dictionary_spring.mappers.WordMappers;
 import ru.s1uad_dw.dictionary_spring.repositories.DictionaryRepository;
+import ru.s1uad_dw.dictionary_spring.validators.DictionaryValidator;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,8 +30,7 @@ public class DictionaryService {
 
     public ViewDictionaryDto getDictionaryById(UUID id) throws ChangeSetPersister.NotFoundException {
         var dictionaryDao = repository.findById(id);
-        if (dictionaryDao.isPresent())
-            return DictionaryMappers.daoToViewDto(dictionaryDao.get());
+        if (dictionaryDao.isPresent()) return DictionaryMappers.daoToViewDto(dictionaryDao.get());
         throw new ChangeSetPersister.NotFoundException();
     }
 
@@ -53,13 +54,18 @@ public class DictionaryService {
         return repository.save(DictionaryMappers.updateDtoToDao(dictionary)).getId();
     }
 
-    public UUID addWord(UUID id, CreateWordDto word) throws ChangeSetPersister.NotFoundException {
+    public UUID addWord(UUID id, CreateWordDto word) throws ChangeSetPersister.NotFoundException, WordIsNotValidException {
         var dictionaryDao = repository.findById(id);
         if (dictionaryDao.isPresent()) {
-            Word wordDao = WordMappers.createDtoToDao(word, dictionaryDao.get());
-            dictionaryDao.get().addWord(wordDao);
-            repository.save(dictionaryDao.get());
-            return wordDao.getId();
+            if (DictionaryValidator.isValid(word.getValue1(), dictionaryDao.get().getPattern()) &&
+                    DictionaryValidator.isValid(word.getValue2(), dictionaryDao.get().getPattern())) {
+                Word wordDao = WordMappers.createDtoToDao(word, dictionaryDao.get());
+                dictionaryDao.get().addWord(wordDao);
+                repository.save(dictionaryDao.get());
+                return wordDao.getId();
+            }
+            throw new WordIsNotValidException(word.getValue1(), word.getValue2(),
+                    "Слово не соответствует ограничениям словаря");
         }
         throw new ChangeSetPersister.NotFoundException();
     }

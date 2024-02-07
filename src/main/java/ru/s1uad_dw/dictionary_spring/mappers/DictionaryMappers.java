@@ -11,7 +11,8 @@ public class DictionaryMappers {
         return new Dictionary(
                 dto.getTitle(),
                 dto.getLanguage1(),
-                dto.getLanguage2()
+                dto.getLanguage2(),
+                dto.getPattern()
         );
     }
 
@@ -40,6 +41,7 @@ public class DictionaryMappers {
                 dto.getTitle(),
                 dto.getLanguage1(),
                 dto.getLanguage2(),
+                dto.getPattern(),
                 dto.getWords()
         );
     }

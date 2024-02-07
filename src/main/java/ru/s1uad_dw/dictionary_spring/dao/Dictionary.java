@@ -21,13 +21,15 @@ public class Dictionary {
     private String title;
     private String language1;
     private String language2;
+    private String pattern;
     @OneToMany(mappedBy = "dictionary", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Word> words = new ArrayList<>();
 
-    public Dictionary(String title, String language1, String language2) {
+    public Dictionary(String title, String language1, String language2, String pattern) {
         this.title = title;
         this.language1 = language1;
         this.language2 = language2;
+        this.pattern = pattern;
     }
 
     public void addWord(Word word) {

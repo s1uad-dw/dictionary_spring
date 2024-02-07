@@ -11,4 +11,5 @@ public class CreateDictionaryDto {
     private String title;
     private String language1;
     private String language2;
+    private String pattern;
 }

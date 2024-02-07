@@ -20,5 +20,6 @@ public class UpdateDictionaryDto {
     private String title;
     private String language1;
     private String language2;
+    private String pattern;
     private List<Word> words;
 }

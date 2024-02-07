@@ -6,6 +6,7 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.s1uad_dw.dictionary_spring.dto.*;
+import ru.s1uad_dw.dictionary_spring.exceptions.WordIsNotValidException;
 import ru.s1uad_dw.dictionary_spring.exceptions.WordNotFountException;
 import ru.s1uad_dw.dictionary_spring.services.DictionaryService;
 
@@ -55,20 +56,20 @@ public class DictionaryController {
 
     @PutMapping("/{id}/add_word")
     @ResponseStatus(HttpStatus.CREATED)
-    public UUID addWord(@PathVariable UUID id,  @RequestBody CreateWordDto word) throws ChangeSetPersister.NotFoundException {
+    public UUID addWord(@PathVariable UUID id,  @RequestBody CreateWordDto word) throws ChangeSetPersister.NotFoundException, WordIsNotValidException {
         return service.addWord(id, word);
     }
 
     @PutMapping("/{id}/remove_word")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeWord(@PathVariable UUID id, @RequestParam String value) throws ChangeSetPersister.NotFoundException, WordNotFountException {
         service.removeWord(id, value);
     }
 
     //DELETE
-    @DeleteMapping("{id}")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteById(@PathVariable UUID id){
+    public void deleteById(@RequestParam UUID id){
         service.deleteById(id);
     }
 }
